@@ -6,7 +6,10 @@
     "allowMixedContent": true,
     "backgroundColor": "#ffffffff",
     "webContentsDebuggingEnabled": false,
-    "appendUserAgent": " UStationApp/1.0"
+    "appendUserAgent": "UStationApp/1.0"
+  },
+  "ios": {
+    "deploymentTarget": "14.0"
   },
   "server": {
     "cleartext": false,
