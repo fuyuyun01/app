@@ -146,6 +146,12 @@ jobs:
           rm -rf android
           npx cap add android
           npx cap sync android
+          - name: 修复SSL证书拦截
+  run: |
+    chmod +x scripts/fix_webview_ssl.sh
+    ./scripts/fix_webview_ssl.sh
+    chmod +x scripts/fix_webview_ssl.sh
+    ./scripts/fix_webview_ssl.sh
           test -f android/app/src/main/AndroidManifest.xml
           test -f android/gradlew
           node scripts/apply-build-config.mjs
