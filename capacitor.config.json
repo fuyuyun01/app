@@ -4,22 +4,17 @@
   "webDir": "www",
   "android": {
     "allowMixedContent": true,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#ffffffff",
     "webContentsDebuggingEnabled": false,
-    "appendUserAgent": " Mozilla/5.0 (Linux; Android) Chrome/120.0.0.0 Mobile",
-    "webViewSettings": {
-      "allowFileAccess": true,
-      "allowContentAccess": true
-    }
+    "appendUserAgent": " UStationApp/1.0"
   },
   "server": {
-    "cleartext": true,
+    "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
       "*"
     ],
-    "hostname": "ff.cjz88.cn",
-    "url": "https://ff.cjz88.cn/",
+    "hostname": "localhost",
     "errorPath": "error.html"
   }
 }
