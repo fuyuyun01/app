@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -27,10 +25,9 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.view.WindowCompat;
 
 public class MainActivity extends AppCompatActivity {
-    // shellPatchVersion=34 — WebView file chooser for <input type=file>
+    // shellPatchVersion=33 — splash SKIP top-right
     private static final int MIN_CHROME_MAJOR = 80;
     private static final int SPLASH_MIN_MS = 600;
-    private static final int FILE_CHOOSER_REQUEST = 1001;
     private WebView webView;
     private ImageView splashView;
     private TextView splashSkipButton;
@@ -38,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean launchedCustomTab = false;
     private boolean splashDismissed = false;
     private long splashShownAt = 0L;
-    private ValueCallback<Uri[]> filePathCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,39 +230,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
     }
 
-    private void clearFilePathCallback() {
-        if (filePathCallback != null) {
-            filePathCallback.onReceiveValue(null);
-            filePathCallback = null;
-        }
-    }
-
-    private Intent buildFileChooserIntent(WebChromeClient.FileChooserParams params) {
-        Intent intent = null;
-        try {
-            if (params != null) {
-                intent = params.createIntent();
-            }
-        } catch (Exception ignored) {
-            intent = null;
-        }
-        if (intent == null) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {
-                "image/*", "image/jpeg", "image/png", "image/webp"
-            });
-        }
-        try {
-            if (params != null && params.getMode() == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            }
-        } catch (Exception ignored) {
-        }
-        return Intent.createChooser(intent, "选择文件");
-    }
-
     private void configureWebView(WebView wv) {
         WebSettings s = wv.getSettings();
         s.setJavaScriptEnabled(true);
@@ -300,56 +263,6 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
         });
-        wv.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onShowFileChooser(
-                WebView view,
-                ValueCallback<Uri[]> callback,
-                FileChooserParams fileChooserParams
-            ) {
-                clearFilePathCallback();
-                filePathCallback = callback;
-                try {
-                    startActivityForResult(buildFileChooserIntent(fileChooserParams), FILE_CHOOSER_REQUEST);
-                    return true;
-                } catch (Exception e) {
-                    clearFilePathCallback();
-                    return false;
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_CHOOSER_REQUEST) {
-            Uri[] results = null;
-            if (resultCode == RESULT_OK && data != null) {
-                if (data.getClipData() != null) {
-                    int count = data.getClipData().getItemCount();
-                    results = new Uri[count];
-                    for (int i = 0; i < count; i++) {
-                        results[i] = data.getClipData().getItemAt(i).getUri();
-                    }
-                } else if (data.getData() != null) {
-                    results = new Uri[] { data.getData() };
-                } else {
-                    results = WebChromeClient.FileChooserParams.parseResult(resultCode, data);
-                }
-            }
-            if (filePathCallback != null) {
-                filePathCallback.onReceiveValue(results);
-                filePathCallback = null;
-            }
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onDestroy() {
-        clearFilePathCallback();
-        super.onDestroy();
     }
 
     @Override
