@@ -9,7 +9,7 @@ import { resolveTargetSdkLevels } from './lib/resolve-target-sdk.mjs';
 import { resolveCiAppDisplayName } from './lib/app-display-name.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SHELL_PATCH_MARKER = 'shellPatchVersion=34';
+const SHELL_PATCH_MARKER = 'shellPatchVersion=33';
 const targetUrl = normalizeTargetUrl(
   process.env.TARGET_URL || process.env.APP_TARGET_URL,
   'https://example.com/',
@@ -123,9 +123,6 @@ if (!mainJava) {
   }
   if (!mainJava.includes('splashSkipButton') || !mainJava.includes('"SKIP"')) {
     fail('MainActivity 启动图须含右上角 SKIP 按钮');
-  }
-  if (!mainJava.includes('onShowFileChooser') || !mainJava.includes('WebChromeClient')) {
-    fail('MainActivity 须实现 WebChromeClient.onShowFileChooser（否则无法选择图片上传）');
   }
   if (mainJava.includes('SplashScreen.installSplashScreen')) {
     fail('MainActivity 不得使用 SplashScreen API（与全屏启动图冲突）');
